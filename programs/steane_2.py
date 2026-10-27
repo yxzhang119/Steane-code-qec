@@ -411,7 +411,7 @@ def _finish_round(engine, active, syndrome, previous, round_index, result, fixed
         result["syndrome_first" if round_index == 0 else "syndrome_last"][active] = syndrome[active]
         if round_index == 1:
             result["syndrome_disagree"][active] = np.any(syndrome[active] != previous[active], axis=1)
-        # 第一轮只记录；第二轮无论是否一致，都使用末轮综合征恢复。
+        # Record the first round only; recover from the second-round syndrome even if it differs.
         confirmed = np.full(len(active), round_index == 1, dtype=bool)
     else:
         confirmed = np.all(syndrome[active] == previous[active], axis=1) if round_index else np.zeros(len(active), dtype=bool)

@@ -1,48 +1,48 @@
 # Steane-code-qec
 
-基于 **Stim** 的 Steane [[7,1,3]] 量子纠错实验。每个方案一个 Python 文件，直接运行即可生成物理错误率—逻辑错误率曲线。依赖 Python、Stim 和 NumPy，已验证 Python 3.13。
+Steane [[7,1,3]] quantum error correction experiments using **Stim**. Each scheme is self-contained in one Python file and produces a logical error rate curve versus physical error rate. Requires Python, Stim, and NumPy; verified with Python 3.13.
 
-在项目根目录安装依赖并运行一个方案：
+Install dependencies and run a scheme from the project root:
 
 ```bash
 python -m pip install -r requirements.txt
 python programs/parallel.py
 ```
 
-切换方案只需替换文件名：
+Select another scheme by changing the filename:
 
-| 文件（位于 `programs/`） | 方案 |
+| File in `programs/` | Scheme |
 |---|---|
-| `steane_1.py` | Steane 单轮 |
-| `steane_2.py` | Steane 固定两轮 |
-| `shor_1.py` | Shor 单轮 |
-| `shor_3.py` | Shor 自适应，最多三轮 |
-| `shor_4.py` | Shor 相邻两轮一致才恢复，最多四轮 |
+| `steane_1.py` | Steane, one round |
+| `steane_2.py` | Steane, two fixed rounds |
+| `shor_1.py` | Shor, one round |
+| `shor_3.py` | Adaptive Shor, up to three rounds |
+| `shor_4.py` | Shor, two consecutive matching rounds required, up to four rounds |
 | `sequential_flag.py` | Sequential Flag |
 | `parallel.py` | Parallel |
 
-新结果保存到 `output/`，包含 CSV 数据与 SVG 曲线。采样量、物理错误率等参数可通过 `--help` 查看。
+New results are saved to `output/` as CSV data and SVG curves. Use `--help` for sampling, physical error rate, and other options.
 
-绘制对比图并重新测量纯 decoder 时间：
+Plot comparisons and measure pure decoder time:
 
 ```bash
 python programs/compare_and_decoder.py
 ```
 
-加 `--mode plot` 可只重画已有结果。
+Add `--mode plot` to redraw saved results only.
 
-**保留的最终结果**（完整文件见 [results/](results/)）：
+**Retained final results** (all files are in [results/](results/)):
 
-- 逻辑错误率：[曲线](results/logical_error.png) · [数据](results/logical_error.csv)
-- 纯 decoder 时间：[柱图](results/decoder_time.png) · [五点曲线](results/decoder_curve.pdf) · [数据](results/decoder_time.csv)
+- Logical error rate: [curve](results/logical_error.png) · [data](results/logical_error.csv)
+- Pure decoder time: [bar chart](results/decoder_time.png) · [five-point curve](results/decoder_curve.pdf) · [data](results/decoder_time.csv)
 
 <details>
-<summary>指标与计时说明</summary>
+<summary>Metrics and timing notes</summary>
 
-- **错误率：** `L` 是额外理想 SteaneCode 恢复后的逻辑零态翻转；`B` 是实际 QEC 输出距任意码态超过一个 Pauli 错误。历史曲线和默认运行中，Steane-1 使用 `L∪B`，其余使用 `L`，分母为完成 QEC 的样本。统一比较 `L` 时，各方案加 `--metric target`。
-- **历史结果：** 两个 Flag 方案的部分低错误率点来自重要性采样，抽样数不等于物理尝试数。当前脚本采用普通 Monte Carlo，生成新曲线，不保证逐点复刻历史数值；新运行给出逐点 95% Wilson 区间，零次失败显示上限。
-- **纯 decoder 时间：** 只计恢复计算、索引与查表，按进入 QEC 的输入数归一化（含后来中止者）。不含 Stim、测量奇偶处理、经典控制、恢复操作、评分与初始化。误差棒为重复间标准差，时间随机器和 batch 变化，不代表硬件延迟。
+- **Error rate:** `L` is a logical-zero target flip after additional ideal SteaneCode recovery; `B` means the actual QEC output is more than one Pauli error away from any code state. Retained and default curves use `L OR B` for Steane-1 and `L` for all other schemes, normalized by completed QEC samples. Add `--metric target` to each scheme to compare `L` consistently.
+- **Historical results:** Some low-error-rate points for the two Flag schemes use importance sampling; importance draws are not physical attempts. Current scripts use ordinary Monte Carlo and generate new curves rather than reproduce historical values point by point. New runs report pointwise 95% Wilson intervals and mark upper bounds when no failures are observed.
+- **Pure decoder time:** Includes only recovery computation, indexing, and table lookup, normalized by inputs entering QEC, including later aborts. Excludes Stim, measurement parity processing, classical control, recovery operations, scoring, and initialization. Error bars show standard deviation across repetitions. Timing depends on the machine and batch size and is not hardware latency.
 
-理想终端评分通过不等于实际 QEC 完全恢复；这些结果不构成完整容错证明。
+Passing ideal terminal scoring does not imply complete recovery by the actual QEC protocol. These results are not a complete proof of fault tolerance.
 
 </details>

@@ -1,0 +1,4 @@
+# Stim is the quantum simulator. NumPy is also a dependency of Stim.
+# Pin the versions verified for this release (Python 3.13).
+stim==1.16.0
+numpy==2.5.4
